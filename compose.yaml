@@ -1,0 +1,20 @@
+services:
+  frontend:
+    build: .
+    ports:
+      - "${CONDUCTOR_PORT:-4321}:4321"
+    environment:
+      HOST: 0.0.0.0
+      PUBLIC_SANITY_PROJECT_ID: ${PUBLIC_SANITY_PROJECT_ID:-your-project-id}
+      PUBLIC_SANITY_DATASET: ${PUBLIC_SANITY_DATASET:-production}
+      SANITY_STUDIO_PROJECT_ID: ${SANITY_STUDIO_PROJECT_ID:-your-project-id}
+      SANITY_STUDIO_DATASET: ${SANITY_STUDIO_DATASET:-production}
+    volumes:
+      - .:/app
+      - node_modules:/app/node_modules
+      - astro_cache:/app/.astro
+    init: true
+
+volumes:
+  node_modules:
+  astro_cache:

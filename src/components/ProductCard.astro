@@ -1,0 +1,131 @@
+---
+import { getSanityImageUrl, type CurrencyCode, type Product } from '../lib/sanity';
+
+interface Props {
+	product: Product;
+	currency?: CurrencyCode;
+}
+
+const { product, currency = 'PHP' } = Astro.props;
+const imageUrl = product.image?.asset?.url
+	? getSanityImageUrl(product.image.asset.url, 800)
+	: undefined;
+const currencyLocales: Record<CurrencyCode, string> = {
+	PHP: 'en-PH',
+	EUR: 'en-IE',
+	USD: 'en-US',
+	GBP: 'en-GB',
+};
+const price = typeof product.price === 'number'
+	? new Intl.NumberFormat(currencyLocales[currency], { style: 'currency', currency }).format(product.price)
+	: 'Ask for price';
+---
+
+<article class="product-card">
+	<div class="product-image-wrap">
+		{imageUrl ? (
+			<img
+				class="product-image"
+				src={imageUrl}
+				alt={product.name}
+				width={product.image?.asset?.metadata?.dimensions?.width}
+				height={product.image?.asset?.metadata?.dimensions?.height}
+				loading="lazy"
+				decoding="async"
+			/>
+		) : (
+			<div class="image-placeholder" aria-label="No product image available">
+				<span aria-hidden="true">✿</span>
+			</div>
+		)}
+		<span class="product-tag">Made with care</span>
+	</div>
+	<div class="product-details">
+		<div class="product-copy">
+			<h3>{product.name}</h3>
+			{product.description && <p>{product.description}</p>}
+		</div>
+		<span class="product-price">{price}</span>
+	</div>
+</article>
+
+<style>
+	.product-card {
+		min-width: 0;
+	}
+
+	.product-image-wrap {
+		position: relative;
+		overflow: hidden;
+		aspect-ratio: 4 / 4.7;
+		background: #f0e8df;
+	}
+
+	.product-image {
+		width: 100%;
+		height: 100%;
+		display: block;
+		object-fit: cover;
+		transition: transform 500ms cubic-bezier(0.2, 0.65, 0.3, 1);
+	}
+
+	.product-card:hover .product-image {
+		transform: scale(1.035);
+	}
+
+	.image-placeholder {
+		width: 100%;
+		height: 100%;
+		display: grid;
+		place-items: center;
+		background:
+			radial-gradient(ellipse at 50% 120%, #cad7c4 0 12%, transparent 12.5%),
+			linear-gradient(145deg, #f4e3d9, #e9d8c8);
+		color: var(--theme-primary);
+		font-family: var(--serif);
+		font-size: 5rem;
+	}
+
+	.product-tag {
+		position: absolute;
+		left: 0.85rem;
+		bottom: 0.85rem;
+		padding: 0.47rem 0.7rem;
+		background: rgb(255 253 249 / 90%);
+		color: #384239;
+		font-size: 0.67rem;
+		letter-spacing: 0.04em;
+	}
+
+	.product-details {
+		padding-top: 1rem;
+		display: flex;
+		align-items: flex-start;
+		justify-content: space-between;
+		gap: 1rem;
+	}
+
+	.product-copy h3 {
+		margin: 0;
+		font-family: var(--serif);
+		font-size: clamp(1.15rem, 1.7vw, 1.4rem);
+		font-weight: 500;
+		letter-spacing: -0.025em;
+	}
+
+	.product-copy p {
+		max-width: 34ch;
+		margin: 0.4rem 0 0;
+		color: var(--muted);
+		font-size: 0.8rem;
+		line-height: 1.6;
+	}
+
+	.product-price {
+		flex: 0 0 auto;
+		padding-top: 0.17rem;
+		color: var(--theme-primary);
+		font-size: 0.86rem;
+		font-weight: 600;
+	}
+</style>
