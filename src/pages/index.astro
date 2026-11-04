@@ -15,6 +15,13 @@ try {
 }
 
 const siteSettings = await siteSettingsPromise;
+const saleProducts = products.filter((product) =>
+	product.isOnSale === true
+	&& typeof product.price === 'number'
+	&& typeof product.salePrice === 'number'
+	&& product.salePrice >= 0
+	&& product.salePrice < product.price,
+);
 const featuredProduct = products.find((product) => product.image?.asset?.url);
 const featuredImage = featuredProduct?.image?.asset?.url
 	? getSanityImageUrl(featuredProduct.image.asset.url, 1200)
@@ -73,6 +80,23 @@ const featuredImage = featuredProduct?.image?.asset?.url
 				</div>
 			</div>
 		</section>
+
+		{saleProducts.length > 0 && (
+			<section id="on-sale" class="sale-collection" aria-labelledby="sale-title">
+				<div class="section-wrap">
+					<div class="section-heading">
+						<div>
+							<p class="eyebrow"><span aria-hidden="true"></span> Special picks</p>
+							<h2 id="sale-title">A little something <em>on sale.</em></h2>
+						</div>
+						<p class="collection-intro">Thoughtful blooms, now at a special price.</p>
+					</div>
+					<div class="product-grid">
+						{saleProducts.map((product) => <ProductCard product={product} currency={siteSettings.currency} />)}
+					</div>
+				</div>
+			</section>
+		)}
 
 		<section id="collection" class="collection section-wrap" aria-labelledby="collection-title">
 			<div class="section-heading">
@@ -371,6 +395,11 @@ const featuredImage = featuredProduct?.image?.asset?.url
 
 	.collection {
 		padding-block: clamp(5.5rem, 10vw, 8rem);
+	}
+
+	.sale-collection {
+		padding-block: clamp(4.25rem, 7vw, 6.25rem);
+		background: #f4ede6;
 	}
 
 	.section-heading {

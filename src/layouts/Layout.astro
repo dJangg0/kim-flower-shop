@@ -21,6 +21,9 @@ const primaryColor = /^#[\da-f]{6}$/i.test(settings.primaryColor ?? '')
 const announcement = settings.showAnnouncement && settings.announcementText?.trim()
 	? settings.announcementText.trim()
 	: '';
+const dailyHighlights = settings.showDailyHighlights
+	? (settings.dailyHighlights ?? []).filter((highlight) => highlight.trim())
+	: [];
 ---
 
 <!doctype html>
@@ -35,6 +38,16 @@ const announcement = settings.showAnnouncement && settings.announcementText?.tri
 		<title>{title}</title>
 	</head>
 	<body>
+		{dailyHighlights.length > 0 && (
+			<aside class="daily-highlights" aria-labelledby="daily-highlights-title">
+				<div class="daily-highlights-inner">
+					<h2 id="daily-highlights-title">Highlights of the day</h2>
+					<ul>
+						{dailyHighlights.map((highlight) => <li>{highlight}</li>)}
+					</ul>
+				</div>
+			</aside>
+		)}
 		{announcement && <div class="announcement-bar">{announcement}</div>}
 
 		<header class="site-header">
@@ -103,6 +116,59 @@ const announcement = settings.showAnnouncement && settings.announcementText?.tri
 </html>
 
 <style>
+	.daily-highlights {
+		background: #f1ece4;
+		border-bottom: 1px solid var(--line);
+		color: var(--ink);
+	}
+
+	.daily-highlights-inner {
+		width: min(100% - 3rem, 1180px);
+		min-height: 2.9rem;
+		margin-inline: auto;
+		padding-block: 0.65rem;
+		display: flex;
+		align-items: center;
+		gap: 1.5rem;
+	}
+
+	.daily-highlights h2 {
+		flex: 0 0 auto;
+		margin: 0;
+		color: var(--theme-primary);
+		font-size: 0.63rem;
+		font-weight: 700;
+		letter-spacing: 0.13em;
+		text-transform: uppercase;
+	}
+
+	.daily-highlights ul {
+		margin: 0;
+		padding: 0;
+		display: flex;
+		align-items: center;
+		flex-wrap: wrap;
+		gap: 0.45rem 1.35rem;
+		list-style: none;
+	}
+
+	.daily-highlights li {
+		display: flex;
+		align-items: center;
+		gap: 0.5rem;
+		font-size: 0.73rem;
+		line-height: 1.45;
+	}
+
+	.daily-highlights li::before {
+		width: 0.32rem;
+		height: 0.32rem;
+		flex: 0 0 auto;
+		border-radius: 50%;
+		background: var(--theme-primary);
+		content: '';
+	}
+
 	.announcement-bar {
 		padding: 0.7rem 1.25rem;
 		background: var(--theme-primary);
@@ -259,6 +325,17 @@ const announcement = settings.showAnnouncement && settings.announcementText?.tri
 	}
 
 	@media (max-width: 720px) {
+		.daily-highlights-inner {
+			width: min(100% - 2rem, 1180px);
+			align-items: flex-start;
+			flex-direction: column;
+			gap: 0.45rem;
+		}
+
+		.daily-highlights ul {
+			gap: 0.4rem 1rem;
+		}
+
 		.header-inner {
 			width: min(100% - 2rem, 1180px);
 			min-height: 76px;

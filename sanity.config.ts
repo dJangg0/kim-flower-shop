@@ -18,6 +18,17 @@ export default defineConfig({
           .items([
             S.documentTypeListItem('product').title('Products'),
             S.listItem()
+              .title('On Sale')
+              .id('onSaleProducts')
+              .child(
+                S.documentTypeList('product')
+                  .title('On Sale')
+                  .filter(
+                    '_type == "product" && isActive == true && isOnSale == true && defined(price) && defined(salePrice) && salePrice >= 0 && salePrice < price',
+                  )
+                  .apiVersion('2026-03-01'),
+              ),
+            S.listItem()
               .title('Site Settings')
               .id('siteSettings')
               .child(S.document().schemaType('siteSettings').documentId('siteSettings')),

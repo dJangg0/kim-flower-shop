@@ -17,6 +17,8 @@ export interface Product {
 	name: string;
 	description?: string;
 	price?: number;
+	isOnSale?: boolean;
+	salePrice?: number;
 	image?: {
 		asset?: {
 			url?: string;
@@ -36,6 +38,8 @@ export interface SiteSettings {
 	currency: CurrencyCode;
 	announcementText?: string;
 	showAnnouncement?: boolean;
+	dailyHighlights?: string[];
+	showDailyHighlights?: boolean;
 }
 
 type QueriedSiteSettings = Omit<Partial<SiteSettings>, 'currency'> & { currency?: string };
@@ -46,6 +50,8 @@ export const activeProductsQuery = `
 		name,
 		description,
 		price,
+		isOnSale,
+		salePrice,
 		"image": image {
 			"asset": asset->{
 				url,
@@ -60,7 +66,9 @@ export const siteSettingsQuery = `
 		primaryColor,
 		currency,
 		announcementText,
-		showAnnouncement
+		showAnnouncement,
+		dailyHighlights,
+		showDailyHighlights
 	}
 `;
 
@@ -74,6 +82,8 @@ const defaultSiteSettings: SiteSettings = {
 	currency: 'PHP',
 	announcementText: '',
 	showAnnouncement: false,
+	dailyHighlights: [],
+	showDailyHighlights: false,
 };
 
 export async function getSiteSettings(): Promise<SiteSettings> {
@@ -83,8 +93,22 @@ export async function getSiteSettings(): Promise<SiteSettings> {
 		const settings = await sanityClient.fetch<QueriedSiteSettings | null>(siteSettingsQuery);
 		const currency = currencyCodes.find((code) => code === settings?.currency)
 			?? defaultSiteSettings.currency;
+		const queriedHighlights = settings?.dailyHighlights;
+		const dailyHighlights = Array.isArray(queriedHighlights)
+			? queriedHighlights
+				.filter((highlight): highlight is string => typeof highlight === 'string')
+				.map((highlight) => highlight.trim())
+				.filter(Boolean)
+				.slice(0, 3)
+			: [];
 
-		return { ...defaultSiteSettings, ...(settings ?? {}), currency };
+		return {
+			...defaultSiteSettings,
+			...(settings ?? {}),
+			currency,
+			dailyHighlights,
+			showDailyHighlights: settings?.showDailyHighlights === true,
+		};
 	} catch (error) {
 		console.error('Could not load Sanity site settings:', error);
 		return defaultSiteSettings;

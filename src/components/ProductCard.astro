@@ -16,8 +16,16 @@ const currencyLocales: Record<CurrencyCode, string> = {
 	USD: 'en-US',
 	GBP: 'en-GB',
 };
-const price = typeof product.price === 'number'
-	? new Intl.NumberFormat(currencyLocales[currency], { style: 'currency', currency }).format(product.price)
+const formatPrice = (amount: number) =>
+	new Intl.NumberFormat(currencyLocales[currency], { style: 'currency', currency }).format(amount);
+const regularPrice = typeof product.price === 'number' ? formatPrice(product.price) : 'Ask for price';
+const hasSalePrice = product.isOnSale === true
+	&& typeof product.price === 'number'
+	&& typeof product.salePrice === 'number'
+	&& product.salePrice >= 0
+	&& product.salePrice < product.price;
+const salePrice = hasSalePrice && typeof product.salePrice === 'number'
+	? formatPrice(product.salePrice)
 	: 'Ask for price';
 ---
 
@@ -39,13 +47,19 @@ const price = typeof product.price === 'number'
 			</div>
 		)}
 		<span class="product-tag">Made with care</span>
+		{hasSalePrice && <span class="sale-badge">On sale</span>}
 	</div>
 	<div class="product-details">
 		<div class="product-copy">
 			<h3>{product.name}</h3>
 			{product.description && <p>{product.description}</p>}
 		</div>
-		<span class="product-price">{price}</span>
+		<div class="product-pricing">
+			{hasSalePrice && <span class="product-original-price">{regularPrice}</span>}
+			<span class:list={['product-price', hasSalePrice && 'product-price-sale']}>
+				{hasSalePrice ? salePrice : regularPrice}
+			</span>
+		</div>
 	</div>
 </article>
 
@@ -97,6 +111,19 @@ const price = typeof product.price === 'number'
 		letter-spacing: 0.04em;
 	}
 
+	.sale-badge {
+		position: absolute;
+		top: 0.85rem;
+		right: 0.85rem;
+		padding: 0.48rem 0.72rem;
+		background: var(--theme-primary);
+		color: #fffdf9;
+		font-size: 0.67rem;
+		font-weight: 700;
+		letter-spacing: 0.07em;
+		text-transform: uppercase;
+	}
+
 	.product-details {
 		padding-top: 1rem;
 		display: flex;
@@ -127,5 +154,23 @@ const price = typeof product.price === 'number'
 		color: var(--theme-primary);
 		font-size: 0.86rem;
 		font-weight: 600;
+	}
+
+	.product-pricing {
+		flex: 0 0 auto;
+		display: grid;
+		justify-items: end;
+		gap: 0.1rem;
+	}
+
+	.product-original-price {
+		color: var(--muted);
+		font-size: 0.72rem;
+		text-decoration: line-through;
+	}
+
+	.product-price-sale {
+		padding-top: 0;
+		color: var(--theme-primary);
 	}
 </style>
