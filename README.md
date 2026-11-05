@@ -44,6 +44,10 @@ This app uses Astro's Node standalone adapter, so deploy it as a Node web servic
 
 The Sanity project must allow the production domain in API CORS origins with credentials enabled for Studio sign-in. Add the `www` origin as well if customers will use it directly.
 
+### Optional branded cold-start screen
+
+Render controls the loading page shown while a Free web service wakes up, so the Astro app cannot style that screen itself. An optional Cloudflare Worker implementation can serve a Kim Flower Shop waiting screen while Render starts, then open the requested page when `/healthz` is ready. See [edge/warmup/README.md](edge/warmup/README.md) for setup. It needs Cloudflare DNS and a Worker route in front of the Render service.
+
 ## Content and sign-in
 
 Manage products and site settings in the Studio at `/admin`. Sanity handles Studio sign-in with your Sanity account. The custom mock `/login` flow has not been implemented.
