@@ -34,19 +34,14 @@ Open the same URLs on <http://localhost:4321/>. Stop the container with `Ctrl+C`
 
 ## Deploy to production
 
-This app uses Astro's Node standalone adapter, so deploy it as a Node web service (not as a static-only site). Render is one compatible option:
+The storefront is statically generated from published Sanity content during each deployment. Vercel serves the generated pages from its CDN, so there is no app server to wake from idle:
 
-1. Push this project to a GitHub branch and connect that repository to a new Render **Web Service** using the **Node** runtime.
-2. Set the build command to `npm ci && npm run build` and the start command to `npm start`.
-3. Set `HOST` to `0.0.0.0`, `PUBLIC_SANITY_PROJECT_ID` to the Sanity project ID, and `PUBLIC_SANITY_DATASET` to the dataset. Render provides the `PORT` value.
-4. Choose an always-on plan for a production storefront. Render's free web services sleep when idle and are intended for testing, not production.
-5. After the service is live, add `artbytisabelle.com` in its Custom Domains settings and follow the DNS instructions from Render at the domain's DNS provider.
+1. Import this GitHub repository into Vercel and keep the Astro framework preset, build command (`npm run build`), and output directory (`dist`).
+2. Add `PUBLIC_SANITY_PROJECT_ID` and `PUBLIC_SANITY_DATASET` as Vercel environment variables for the environments you deploy.
+3. Add `artbytisabelle.com` in the Vercel project's Domains settings and follow its DNS instructions.
+4. In Sanity, create a Vercel Deploy Hook and a webhook that calls it when published content changes. This rebuilds the storefront so product and site-setting edits appear on the site.
 
 The Sanity project must allow the production domain in API CORS origins with credentials enabled for Studio sign-in. Add the `www` origin as well if customers will use it directly.
-
-### Optional branded cold-start screen
-
-Render controls the loading page shown while a Free web service wakes up, so the Astro app cannot style that screen itself. An optional Cloudflare Worker implementation can serve a Kim Flower Shop waiting screen while Render starts, then open the requested page when `/healthz` is ready. See [edge/warmup/README.md](edge/warmup/README.md) for setup. It needs Cloudflare DNS and a Worker route in front of the Render service.
 
 ## Content and sign-in
 
