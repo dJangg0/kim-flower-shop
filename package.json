@@ -8,12 +8,10 @@
   "scripts": {
     "dev": "astro dev",
     "build": "astro build",
-    "start": "node ./dist/server/entry.mjs",
     "preview": "astro preview",
     "astro": "astro"
   },
   "dependencies": {
-    "@astrojs/node": "^11.1.9",
     "@astrojs/react": "^7.1.2",
     "@sanity/astro": "^3.6.0",
     "@sanity/client": "^8.14.1",
