@@ -8,7 +8,7 @@ const sanityClient = projectId && projectId !== 'your-project-id'
 			projectId,
 			dataset,
 			apiVersion: '2026-03-01',
-			useCdn: true,
+			useCdn: false,
 		})
 	: null;
 
