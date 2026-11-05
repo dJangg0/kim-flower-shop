@@ -1,0 +1,10 @@
+{
+	"name": "kim-flower-shop-warmup",
+	"main": "src/index.js",
+	"compatibility_date": "2026-11-04",
+	"workers_dev": true,
+	"preview_urls": true,
+	"vars": {
+		"RENDER_ORIGIN": "https://YOUR-SERVICE.onrender.com"
+	}
+}
